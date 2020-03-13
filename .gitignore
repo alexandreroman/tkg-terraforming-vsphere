@@ -1,0 +1,6 @@
+.terraform
+terraform.tfstate*
+terraform.tfvars
+tkg-*.gz
+tkg-cluster.yml
+vsphere-storageclass.yml

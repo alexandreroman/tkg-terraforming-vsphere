@@ -1,0 +1,15 @@
+VSPHERE_SERVER: "${vcenter_server}"
+VSPHERE_USERNAME: "${vcenter_user}"
+VSPHERE_PASSWORD: "${vcenter_password}"
+VSPHERE_DATACENTER: "${datacenter}"
+VSPHERE_DATASTORE: "${datastore}"
+VSPHERE_NETWORK: "${network}"
+VSPHERE_RESOURCE_POOL: "${resource_pool}"
+VSPHERE_FOLDER: "${vm_folder}"
+VSPHERE_TEMPLATE: "photon-3-kube-v1.17.3"
+VSPHERE_DISK_GIB: 30
+VSPHERE_NUM_CPUS: 2
+VSPHERE_MEM_MIB: 2048
+SERVICE_CIDR: "100.64.0.0/13"
+CLUSTER_CIDR: "100.96.0.0/11"
+SERVICE_DOMAIN: "cluster.local"
