@@ -18,6 +18,7 @@ if ! [ -f /usr/local/bin/kubectl ]; then
   curl -LO https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     sudo mv ./kubectl /usr/local/bin/kubectl
+    echo 'source <(kubectl completion bash)' >>~/.bashrc
 fi
 
 # Install krew plugins: ctx, ns.
