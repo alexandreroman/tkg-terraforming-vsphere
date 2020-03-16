@@ -20,6 +20,23 @@ if ! [ -f /usr/local/bin/kubectl ]; then
     sudo mv ./kubectl /usr/local/bin/kubectl
 fi
 
+# Install krew plugins: ctx, ns.
+if ! [ -d /home/ubuntu/.krew ]; then
+  (
+    set -x; cd "$(mktemp -d)" &&
+    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" &&
+    tar zxvf krew.tar.gz &&
+    KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" &&
+    "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz &&
+    "$KREW" update
+  )
+  echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> /home/ubuntu/.bashrc
+  source /home/ubuntu/.bashrc
+  kubectl krew update
+  kubectl krew install ctx
+  kubectl krew install ns
+fi
+
 # Generate a default TKG configuration
 # (this command will fail but it's normal at this point).
 if ! [ -f /home/ubuntu/.tkg/config.yaml ]; then
