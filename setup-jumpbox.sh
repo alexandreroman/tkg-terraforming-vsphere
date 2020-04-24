@@ -21,27 +21,9 @@ if ! [ -f /usr/local/bin/kubectl ]; then
     echo 'source <(kubectl completion bash)' >>~/.bashrc
 fi
 
-# Install krew plugins: ctx, ns.
-if ! [ -d /home/ubuntu/.krew ]; then
-  (
-    set -x; cd "$(mktemp -d)" &&
-    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" &&
-    tar zxvf krew.tar.gz &&
-    KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" &&
-    "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz &&
-    "$KREW" update
-  )
-  echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> /home/ubuntu/.bashrc
-  source /home/ubuntu/.bashrc
-  kubectl krew update
-  kubectl krew install ctx
-  kubectl krew install ns
-fi
-
-# Generate a default TKG configuration
-# (this command will fail but it's normal at this point).
+# Generate a default TKG configuration.
 if ! [ -f /home/ubuntu/.tkg/config.yaml ]; then
-  tkg init -q
+  tkg get mc
 fi
 
 # Configure TKG.
@@ -51,6 +33,5 @@ if [ -f /home/ubuntu/tkg-cluster.yml ]; then
   cat <<EOF >> /home/ubuntu/.tkg/config.yaml
 VSPHERE_SSH_AUTHORIZED_KEY: "$SSH_PUBLIC_KEY"
 EOF
-  sed -i 's/KUBERNETES_VERSION: 1.16.2/KUBERNETES_VERSION: 1.17.3/g' /home/ubuntu/.tkg/config.yaml
   /bin/rm -f /home/ubuntu/tkg-cluster.yml
 fi

@@ -79,8 +79,8 @@ resource "vsphere_virtual_machine" "jumpbox" {
   }
   provisioner "file" {
     # Copy install scripts.
-    source      = "install-tkg.sh"
-    destination = "/home/ubuntu/install-tkg.sh"
+    source      = "setup-jumpbox.sh"
+    destination = "/home/ubuntu/setup-jumpbox.sh"
   }
   provisioner "remote-exec" {
     # Install Docker (a new group 'docker' will be created).
@@ -92,17 +92,10 @@ resource "vsphere_virtual_machine" "jumpbox" {
   provisioner "remote-exec" {
     # Install TKG.
     inline = [
-      "chmod +x /home/ubuntu/install-tkg.sh",
-      "sh /home/ubuntu/install-tkg.sh ",
+      "chmod +x /home/ubuntu/setup-jumpbox.sh",
+      "sh /home/ubuntu/setup-jumpbox.sh ",
     ]
   }
-}
-
-resource "local_file" "vsphere_storage_class" {
-    content = templatefile("vsphere-storageclass.tpl", {
-      datastore = var.datastore,
-    })
-    filename = "vsphere-storageclass.yml"
 }
 
 output "jumpbox_ip_address" {

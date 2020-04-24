@@ -4,7 +4,6 @@ metadata:
   name: vsphere-storageclass
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-provisioner: kubernetes.io/vsphere-volume
+provisioner: csi.vsphere.vmware.com
 parameters:
-  datastore: ${datastore}
-  diskformat: thin
+  DatastoreURL: "${datastore_url}"

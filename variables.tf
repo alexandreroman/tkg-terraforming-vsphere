@@ -26,6 +26,10 @@ variable "datastore" {
   default = "LUN01"
 }
 
+variable "datastore_url" {
+  type = string
+}
+
 variable "vm_folder" {
   type    = string
   default = "tkg"
@@ -43,5 +47,5 @@ variable "network" {
 
 variable "tkg_cli_file_name" {
   type    = string
-  default = "tkg-linux-amd64-v0.1.1-rc.1+vmware.1.gz"
+  default = "tkg-linux-amd64-v1.0.0+vmware.1.gz"
 }

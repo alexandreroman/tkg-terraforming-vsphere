@@ -32,3 +32,10 @@ data "vsphere_virtual_machine" "ubuntu_template" {
   name          = "bionic-server-cloudimg-amd64"
   datacenter_id = data.vsphere_datacenter.dc.id
 }
+
+resource "local_file" "vsphere_storage_class" {
+    content = templatefile("vsphere-storageclass.tpl", {
+      datastore_url = var.datastore_url,
+    })
+    filename = "vsphere-storageclass.yml"
+}
