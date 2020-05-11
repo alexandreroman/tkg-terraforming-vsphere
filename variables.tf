@@ -47,5 +47,5 @@ variable "network" {
 
 variable "tkg_cli_file_name" {
   type    = string
-  default = "tkg-linux-amd64-v1.0.0+vmware.1.gz"
+  default = "tkg-linux-amd64-v1.1.0-rc.1+vmware.1.gz"
 }

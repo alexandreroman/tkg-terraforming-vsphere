@@ -6,8 +6,8 @@ VSPHERE_DATASTORE: "${datastore}"
 VSPHERE_NETWORK: "${network}"
 VSPHERE_RESOURCE_POOL: "${resource_pool}"
 VSPHERE_FOLDER: "${vm_folder}"
-VSPHERE_TEMPLATE: "photon-3-kube-v1.17.3+vmware.2"
-VSPHERE_HAPROXY_TEMPLATE: "capv-haproxy"
+VSPHERE_TEMPLATE: "photon-3-kube-v1.18.1+vmware.1"
+VSPHERE_HAPROXY_TEMPLATE: "photon-3-haproxy-v1.2.4+vmware.1"
 VSPHERE_DISK_GIB: 40
 VSPHERE_NUM_CPUS: 2
 VSPHERE_MEM_MIB: 4096
