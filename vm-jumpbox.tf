@@ -1,14 +1,16 @@
 # Generate TKG configuration.
 resource "local_file" "tkg_configuration_file" {
     content = templatefile("tkg-cluster.tpl", {
-      vcenter_server = var.vsphere_server,
-      vcenter_user = var.vsphere_user,
-      vcenter_password = var.vsphere_password,
-      datacenter = var.datacenter,
-      datastore = var.datastore,
-      network = var.network,
-      resource_pool = var.resource_pool,
-      vm_folder = var.vm_folder
+      tkg_node_template    = var.tkg_node_template,
+      tkg_haproxy_template = var.tkg_haproxy_template,
+      vcenter_server       = var.vsphere_server,
+      vcenter_user         = var.vsphere_user,
+      vcenter_password     = var.vsphere_password,
+      datacenter           = var.datacenter,
+      datastore            = var.datastore,
+      network              = var.network,
+      resource_pool        = var.resource_pool,
+      vm_folder            = var.vm_folder
     })
     filename = "tkg-cluster.yml"
 }

@@ -47,5 +47,15 @@ variable "network" {
 
 variable "tkg_cli_file_name" {
   type    = string
-  default = "tkg-linux-amd64-v1.1.0-rc.1+vmware.1.gz"
+  default = "tkg-linux-amd64-v1.0.0+vmware.1.gz"
+}
+
+variable "tkg_node_template" {
+  type    = string
+  default = "photon-3-kube-v1.17.3+vmware.2"
+}
+
+variable "tkg_haproxy_template" {
+  type    = string
+  default = "capv-haproxy"
 }
