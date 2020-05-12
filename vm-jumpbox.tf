@@ -1,6 +1,6 @@
 # Generate TKG configuration.
 resource "local_file" "tkg_configuration_file" {
-    content = templatefile("tkg-cluster.tpl", {
+    content = templatefile("tkg-cluster.yml.tpl", {
       tkg_node_template    = var.tkg_node_template,
       tkg_haproxy_template = var.tkg_haproxy_template,
       vcenter_server       = var.vsphere_server,
