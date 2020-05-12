@@ -12,7 +12,8 @@ resource "local_file" "tkg_configuration_file" {
       resource_pool        = var.resource_pool,
       vm_folder            = var.vm_folder
     })
-    filename = "tkg-cluster.yml"
+    filename        = "tkg-cluster.yml"
+    file_permission = "0644"
 }
 
 # Use the jumpbox to access TKG from the outside.
