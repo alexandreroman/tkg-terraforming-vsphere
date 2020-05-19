@@ -28,7 +28,7 @@ resource "vsphere_virtual_machine" "jumpbox" {
   wait_for_guest_ip_timeout  = 1
 
   num_cpus = 2
-  memory   = 10240
+  memory   = 2048
   guest_id = "ubuntu64Guest"
   folder   = var.vm_folder
 
