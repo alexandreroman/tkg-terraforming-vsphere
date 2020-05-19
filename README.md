@@ -76,6 +76,11 @@ to your vSphere instance.
 
 ## Bootstrap the jumpbox
 
+First, initialize Terraform with required plugins:
+```bash
+$ terraform init
+```
+
 Run this command to create a jumpbox VM using Terraform:
 ```bash
 $ terraform apply
