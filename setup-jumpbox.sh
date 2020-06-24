@@ -42,3 +42,13 @@ sed -i 's/fullClone/linkedClone/g' $HOME/.tkg/providers/infrastructure-vsphere/v
 
 # Install yq.
 sudo snap install yq
+
+# Configure VIm.
+if ! [ -f /home/ubuntu/.vimrc ]; then
+  cat <<EOF >> /home/ubuntu/.vimrc
+set ts=2
+set sw=2
+set ai
+set et
+EOF
+fi
