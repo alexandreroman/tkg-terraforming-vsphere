@@ -38,7 +38,7 @@ resource "vsphere_virtual_machine" "jumpbox" {
 
   disk {
     label            = "disk0"
-    thin_provisioned = false
+    thin_provisioned = true
     size             = 10
   }
 
