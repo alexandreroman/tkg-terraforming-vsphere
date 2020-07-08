@@ -59,3 +59,8 @@ variable "tkg_haproxy_template" {
   type    = string
   default = "capv-haproxy"
 }
+
+variable "ubuntu_template" {
+  type    = string
+  default = "bionic-server-cloudimg-amd64"
+}

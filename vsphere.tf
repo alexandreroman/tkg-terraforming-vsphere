@@ -29,7 +29,7 @@ data "vsphere_resource_pool" "resource_pool" {
 }
 
 data "vsphere_virtual_machine" "ubuntu_template" {
-  name          = "bionic-server-cloudimg-amd64"
+  name          = var.ubuntu_template
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
