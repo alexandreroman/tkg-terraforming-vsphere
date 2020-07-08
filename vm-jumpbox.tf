@@ -30,7 +30,7 @@ resource "vsphere_virtual_machine" "jumpbox" {
   num_cpus = 2
   memory   = 2048
   guest_id = "ubuntu64Guest"
-  folder   = var.vm_folder
+  folder   = vsphere_folder.vm_folder.path
 
   network_interface {
     network_id = data.vsphere_network.network.id
