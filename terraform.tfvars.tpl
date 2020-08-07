@@ -19,6 +19,11 @@ datastore_url    = "ds:///vmfs/volumes/changeme/"
 #tkg_haproxy_template = "photon-3-haproxy-v1.2.4+vmware.1"
 
 # TKG 1.1.2
-tkg_cli_file_name    = "tkg-linux-amd64-v1.1.2+vmware.1.gz"
-tkg_node_template    = "photon-3-kube-v1.18.3+vmware.1"
+#tkg_cli_file_name    = "tkg-linux-amd64-v1.1.2+vmware.1.gz"
+#tkg_node_template    = "photon-3-kube-v1.18.3+vmware.1"
+#tkg_haproxy_template = "photon-3-haproxy-v1.2.4+vmware.1"
+
+# TKG 1.1.3
+tkg_cli_file_name    = "tkg-linux-amd64-v1.1.3+vmware.1.gz"
+tkg_node_template    = "photon-3-kube-v1.18.6+vmware.1"
 tkg_haproxy_template = "photon-3-haproxy-v1.2.4+vmware.1"
