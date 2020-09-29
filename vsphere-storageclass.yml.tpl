@@ -5,5 +5,6 @@ metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: csi.vsphere.vmware.com
+allowVolumeExpansion: true
 parameters:
   DatastoreURL: "${datastore_url}"
