@@ -11,7 +11,6 @@ Download TKG bits to your workstation. The following components are required:
 
 - TKG CLI for Linux: includes the `tkg` CLI used to operate TKG and workload clusters from the jumpbox VM
 - Photon OS node OVA: used for TKG nodes
-- Photon OS HAProxy OVA: used for control plane load balancers
 - [Ubuntu Bionic server cloud image OVA](https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.ova): used for the jumpbox VM
 
 Make sure to copy the TKG CLI archive (`tkg-linux-amd64-*.gz`) to this repository.
@@ -26,8 +25,8 @@ Create a resource pool under the cluster where TKG is deployed to: use name `TKG
 
 All TKG VMs will be deployed to this resource pool.
 
-You should have 3 OVA files on your workstation
-(Ubuntu Bionic server cloud image, Photon OS node, Photon OS HAProxy):
+You should have 2 OVA files on your workstation
+(Ubuntu Bionic server cloud image and Photon OS node):
 we're about to deploy each of these files to vSphere.
 
 Repeat the next steps for each OVA file:
@@ -60,21 +59,8 @@ vsphere_server   = "vcsa.mycompany.com"
 network       = "changeme"
 datastore_url = "ds:///vmfs/volumes/changeme/"
 
-# TKG 1.0.0
-#tkg_cli_file_name    = "tkg-linux-amd64-v1.0.0+vmware.1.gz"
-#tkg_node_template    = "photon-3-kube-v1.17.3+vmware.2"
-#tkg_haproxy_template = "capv-haproxy"
-
-# TKG 1.1.0
-#tkg_cli_file_name    = "tkg-linux-amd64-v1.1.0+vmware.1.gz"
-#tkg_node_template    = "photon-3-kube-v1.18.2+vmware.1"
-#tkg_haproxy_template = "photon-3-haproxy-v1.2.4+vmware.1"
-
-# TKG 1.1.2
-tkg_cli_file_name    = "tkg-linux-amd64-v1.1.2+vmware.1.gz"
-tkg_node_template    = "photon-3-kube-v1.18.3+vmware.1"
-tkg_haproxy_template = "photon-3-haproxy-v1.2.4+vmware.1"
-
+# TKG 1.2.0
+tkg_cli_file_name = "tkg-linux-amd64-v1.2.0+vmware.1.tar.gz"
 ```
 
 You must align this configuration file with the TKG version you deployed
@@ -114,8 +100,13 @@ $ ssh ubuntu@$(terraform output jumpbox_ip_address)
 
 Create the TKG management cluster:
 ```bash
-$ tkg init --infrastructure vsphere -v 6 -p dev
+$ tkg init --infrastructure vsphere --vsphere-controlplane-endpoint-ip <static IP for control plane>
 ```
+
+As specified in the [TKG documentation](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.2/vmware-tanzu-kubernetes-grid-12/GUID-mgmt-clusters-vsphere-cli.html#tkg-init),
+you need to use a static IP for the control plane of the management cluster.
+Make sure that this IP address is in the same subnet as the DHCP range, but do not choose
+an IP address in the DHCP range.
 
 This process takes less than 10 minutes.
 
@@ -123,8 +114,11 @@ This process takes less than 10 minutes.
 
 From the jumpbox VM, create a workload cluster:
 ```bash
-$ tkg create cluster dev01 -p dev -v 6
+$ tkg create cluster dev01 --plan dev --vsphere-controlplane-endpoint-ip <static IP for control plane>
 ```
+
+Again, a static IP address must be set for the control plane of your cluster.
+Make sure that this IP address is not in the DHCP range, but is in the same subnet as the DHCP range
 
 This process takes less than 5 minutes.
 

@@ -1,10 +1,15 @@
 #!/bin/sh
 
 # Uncompress TKG archive and install CLI.
-if [ -f /home/ubuntu/tkg.gz ]; then
-  cd /home/ubuntu && gunzip /home/ubuntu/tkg.gz && \
-    chmod +x /home/ubuntu/tkg && \
-    sudo mv /home/ubuntu/tkg /usr/local/bin
+if [ -f /home/ubuntu/tkg.tgz ]; then
+  cd /home/ubuntu && tar zxf /home/ubuntu/tkg.tgz && \
+    chmod +x /home/ubuntu/tkg/* && \
+    sudo mv /home/ubuntu/tkg/tkg* /usr/local/bin/tkg && \
+    sudo mv /home/ubuntu/tkg/imgpkg* /usr/local/bin/imgpkg && \
+    sudo mv /home/ubuntu/tkg/kapp* /usr/local/bin/kapp && \
+    sudo mv /home/ubuntu/tkg/kbld* /usr/local/bin/kbld && \
+    sudo mv /home/ubuntu/tkg/ytt* /usr/local/bin/ytt && \
+    rm -rf /home/ubuntu/tkg.tgz /home/ubuntu/tkg
 fi
 
 # Generate a SSH keypair.
@@ -14,7 +19,7 @@ fi
 
 # Install K8s CLI.
 if ! [ -f /usr/local/bin/kubectl ]; then
-  K8S_VERSION=v1.18.3
+  K8S_VERSION=v1.19.1
   curl -LO https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     sudo mv ./kubectl /usr/local/bin/kubectl

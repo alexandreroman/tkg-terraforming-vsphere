@@ -50,16 +50,6 @@ variable "tkg_cli_file_name" {
   default = "tkg-linux-amd64-v1.0.0+vmware.1.gz"
 }
 
-variable "tkg_node_template" {
-  type    = string
-  default = "photon-3-kube-v1.17.3+vmware.2"
-}
-
-variable "tkg_haproxy_template" {
-  type    = string
-  default = "capv-haproxy"
-}
-
 variable "ubuntu_template" {
   type    = string
   default = "bionic-server-cloudimg-amd64"
