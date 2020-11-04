@@ -41,10 +41,6 @@ EOF
   /bin/rm -f /home/ubuntu/tkg-cluster.yml
 fi
 
-# Change cloning mechanism to linkedClone (from fullClone), in order to
-# lower VM creation time and save disk space.
-sed -i 's/fullClone/linkedClone/g' $HOME/.tkg/providers/infrastructure-vsphere/v*/cluster-template-*.yaml
-
 # Install yq.
 sudo snap install yq
 
