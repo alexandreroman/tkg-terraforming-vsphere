@@ -59,8 +59,8 @@ vsphere_server   = "vcsa.mycompany.com"
 network       = "changeme"
 datastore_url = "ds:///vmfs/volumes/changeme/"
 
-# TKG 1.2.0
-tkg_cli_file_name = "tkg-linux-amd64-v1.2.0+vmware.1.tar.gz"
+# TKG 1.2.1
+tkg_cli_file_name = "tkg-linux-amd64-v1.2.1+vmware.1.tar.gz"
 ```
 
 You must align this configuration file with the TKG version you deployed
