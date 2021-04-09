@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. /home/ubuntu/.env
+
 # Uncompress TKG archive and install CLI.
 if [ -f /home/ubuntu/tkg.tgz ]; then
   cd /home/ubuntu && tar zxf /home/ubuntu/tkg.tgz && \
@@ -10,6 +12,37 @@ if [ -f /home/ubuntu/tkg.tgz ]; then
     sudo mv /home/ubuntu/tkg/kbld* /usr/local/bin/kbld && \
     sudo mv /home/ubuntu/tkg/ytt* /usr/local/bin/ytt && \
     rm -rf /home/ubuntu/tkg.tgz /home/ubuntu/tkg
+fi
+
+# Generate a default TKG configuration.
+if ! [ -f /home/ubuntu/.tkg/config.yaml ]; then
+  tkg get mc
+fi
+
+# Set up HTTP proxy support
+if ! [ -z "HTTP_PROXY_HOST" ]; then
+  export http_proxy=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}
+  export https_proxy=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}
+  export NO_PROXY=localhost,127.0.0.1,.svc,.local
+
+  cat <<EOF >> /home/ubuntu/apt-proxy
+Acquire {
+  HTTP::proxy "http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}";
+  HTTPS::proxy "http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}";
+}
+EOF
+  sudo mv /home/ubuntu/apt-proxy /etc/apt/apt.conf.d/proxy
+  sudo snap set system proxy.http="http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}"
+  sudo snap set system proxy.https="http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}"
+
+  cat <<EOF >> /home/ubuntu/docker-proxy
+[Service]
+Environment="HTTP_PROXY=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}"
+Environment="HTTPS_PROXY=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}"
+Environment="NO_PROXY="localhost,127.0.0.1,::1,.local"
+EOF
+  sudo mkdir -p /etc/systemd/system/docker.service.d
+  sudo mv /home/ubuntu/docker-proxy /etc/systemd/system/docker.service.d/proxy.conf
 fi
 
 # Generate a SSH keypair.
@@ -24,11 +57,6 @@ if ! [ -f /usr/local/bin/kubectl ]; then
     chmod +x ./kubectl && \
     sudo mv ./kubectl /usr/local/bin/kubectl
     echo 'source <(kubectl completion bash)' >>~/.bashrc
-fi
-
-# Generate a default TKG configuration.
-if ! [ -f /home/ubuntu/.tkg/config.yaml ]; then
-  tkg get mc
 fi
 
 # Configure TKG.

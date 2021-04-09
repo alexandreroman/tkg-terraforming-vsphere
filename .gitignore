@@ -1,8 +1,10 @@
 .DS_Store
 .terraform
+.terraform.lock*
 terraform.tfstate*
 terraform.tfvars
 tkg-*.gz
 tkg-cluster.yml
 vsphere-storageclass.yml
 *.ova
+env

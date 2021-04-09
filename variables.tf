@@ -54,3 +54,13 @@ variable "ubuntu_template" {
   type    = string
   default = "bionic-server-cloudimg-amd64"
 }
+
+variable "http_proxy_host" {
+  type    = string
+  default = ""
+}
+
+variable "http_proxy_port" {
+  type    = number
+  default = 0
+}

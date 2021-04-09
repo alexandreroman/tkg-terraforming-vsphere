@@ -14,6 +14,16 @@ resource "local_file" "tkg_configuration_file" {
     file_permission = "0644"
 }
 
+# Generate additional configuration file.
+resource "local_file" "env_file" {
+    content = templatefile("env.tpl", {
+      http_proxy_host = var.http_proxy_host,
+      http_proxy_port = var.http_proxy_port
+    })
+    filename        = "env"
+    file_permission = "0644"
+}
+
 # Use the jumpbox to access TKG from the outside.
 resource "vsphere_virtual_machine" "jumpbox" {
   name             = "jumpbox"
@@ -23,7 +33,7 @@ resource "vsphere_virtual_machine" "jumpbox" {
   # Older versions of VMware tools do not return an IP address:
   # get guest IP address instead.
   wait_for_guest_net_timeout = -1
-  wait_for_guest_ip_timeout  = 1
+  wait_for_guest_ip_timeout  = 2
 
   num_cpus = 2
   memory   = 2048
@@ -37,7 +47,7 @@ resource "vsphere_virtual_machine" "jumpbox" {
   disk {
     label            = "disk0"
     thin_provisioned = true
-    size             = 10
+    size             = 20
   }
 
   clone {
@@ -79,22 +89,27 @@ resource "vsphere_virtual_machine" "jumpbox" {
     destination = "/home/ubuntu/tkg-cluster.yml"
   }
   provisioner "file" {
+    # Copy additional configuration file.
+    source      = "env"
+    destination = "/home/ubuntu/.env"
+  }
+  provisioner "file" {
     # Copy install scripts.
     source      = "setup-jumpbox.sh"
     destination = "/home/ubuntu/setup-jumpbox.sh"
-  }
-  provisioner "remote-exec" {
-    # Install Docker (a new group 'docker' will be created).
-    inline = [
-      "echo ${vsphere_virtual_machine.jumpbox.default_ip_address} jumpbox | sudo tee -a /etc/hosts",
-      "sudo apt-get update && sudo apt-get -y install docker.io && sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker && sudo usermod -aG docker ubuntu",
-    ]
   }
   provisioner "remote-exec" {
     # Install TKG.
     inline = [
       "chmod +x /home/ubuntu/setup-jumpbox.sh",
       "sh /home/ubuntu/setup-jumpbox.sh ",
+    ]
+  }
+  provisioner "remote-exec" {
+    # Install Docker (a new group 'docker' will be created).
+    inline = [
+      "echo ${vsphere_virtual_machine.jumpbox.default_ip_address} jumpbox | sudo tee -a /etc/hosts",
+      "sudo apt-get update && sudo apt-get -y install docker.io && sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker && sudo usermod -aG docker ubuntu",
     ]
   }
 }
