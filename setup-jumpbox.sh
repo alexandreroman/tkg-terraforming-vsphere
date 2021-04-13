@@ -81,3 +81,9 @@ set ai
 set et
 EOF
 fi
+
+# Install Docker.
+sudo apt-get update && \
+sudo apt-get -y install docker.io && \
+sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker && \
+sudo usermod -aG docker ubuntu
