@@ -3,8 +3,11 @@ vsphere_server   = "vcsa.mydomain.com"
 network          = "net"
 datastore_url    = "ds:///vmfs/volumes/changeme/"
 
-# TKG 1.2.1
-tkg_cli_file_name = "tkg-linux-amd64-v1.2.1+vmware.1.tar.gz"
+# TKG 1.3.1.
+tanzu_cli_file_name = "tanzu-cli-bundle-v1.3.1-linux-amd64.tar"
+
+# Management control plane endpoint.
+control_plane_endpoint = 192.168.100.1
 
 # Uncomment to enable HTTP proxy support.
 # http_proxy_host = "my.http.proxy"

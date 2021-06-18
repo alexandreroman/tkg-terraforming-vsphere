@@ -3,24 +3,36 @@
 . /home/ubuntu/.env
 
 # Uncompress TKG archive and install CLI.
-if [ -f /home/ubuntu/tkg.tgz ]; then
-  cd /home/ubuntu && tar zxf /home/ubuntu/tkg.tgz && \
-    chmod +x /home/ubuntu/tkg/* && \
-    sudo mv /home/ubuntu/tkg/tkg* /usr/local/bin/tkg && \
-    sudo mv /home/ubuntu/tkg/imgpkg* /usr/local/bin/imgpkg && \
-    sudo mv /home/ubuntu/tkg/kapp* /usr/local/bin/kapp && \
-    sudo mv /home/ubuntu/tkg/kbld* /usr/local/bin/kbld && \
-    sudo mv /home/ubuntu/tkg/ytt* /usr/local/bin/ytt && \
-    rm -rf /home/ubuntu/tkg.tgz /home/ubuntu/tkg
+if [ -f /home/ubuntu/tanzu-cli.tar ]; then
+  mkdir /home/ubuntu/tanzu && mv /home/ubuntu/tanzu-cli.tar /home/ubuntu/tanzu && \
+    cd /home/ubuntu/tanzu && tar vxf tanzu-cli.tar && cd /home/ubuntu/tanzu/cli && \
+    sudo install core/v*/tanzu-core-linux_amd64 /usr/local/bin/tanzu && \
+    gunzip ytt-linux-amd64-*.gz && sudo install ytt-linux-amd64* /usr/local/bin/ytt && \
+    gunzip kapp-linux-amd64*.gz && sudo install kapp-linux-amd64* /usr/local/bin/kapp && \
+    gunzip imgpkg-linux-amd64*.gz && sudo install imgpkg-linux-amd64* /usr/local/bin/imgpkg && \
+    gunzip kbld-linux-amd64*.gz && sudo install kbld-linux-amd64* /usr/local/bin/kbld && \
+    gunzip vendir-linux-amd64*.gz && sudo install vendir-linux-amd64* /usr/local/bin/vendir && \
+    tanzu plugin clean && \
+    tanzu plugin install --local /home/ubuntu/tanzu/cli all && \
+    mkdir -p /home/ubuntu/.tanzu && \
+    tanzu completion bash > /home/ubuntu/.tanzu/completion.bash.inc && \
+    printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.tanzu/completion.bash.inc'\n" >> ~/.bashrc
 fi
 
 # Generate a default TKG configuration.
-if ! [ -f /home/ubuntu/.tkg/config.yaml ]; then
-  tkg get mc
+if ! [ -f /home/ubuntu/.tanzu/tkg/cluster-config.yaml ]; then
+  tanzu init > /dev/null 2>&1
+  tanzu management-cluster create > /dev/null 2>&1
+  mkdir -p ~/.tanzu/tkg/clusterconfigs
+  cat <<EOF >> ~/.tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
+CLUSTER_NAME: mgmt
+CLUSTER_PLAN: dev
+VSPHERE_CONTROL_PLANE_ENDPOINT: "$CONTROL_PLANE_ENDPOINT"
+EOF
 fi
 
 # Set up HTTP proxy support
-if ! [ -z "HTTP_PROXY_HOST" ]; then
+if ! [ -z "$HTTP_PROXY_HOST" ]; then
   export http_proxy=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}
   export https_proxy=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}
   export NO_PROXY=localhost,127.0.0.1,.svc,.local
@@ -52,18 +64,18 @@ fi
 
 # Install K8s CLI.
 if ! [ -f /usr/local/bin/kubectl ]; then
-  K8S_VERSION=v1.19.3
+  K8S_VERSION=v1.20.5
   curl -LO https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
-    sudo mv ./kubectl /usr/local/bin/kubectl
-    echo 'source <(kubectl completion bash)' >>~/.bashrc
+    sudo install ./kubectl /usr/local/bin/kubectl
+    echo 'source <(kubectl completion bash)' >> ~/.bashrc
 fi
 
 # Configure TKG.
 if [ -f /home/ubuntu/tkg-cluster.yml ]; then
-  cat /home/ubuntu/tkg-cluster.yml >> /home/ubuntu/.tkg/config.yaml
+  cat /home/ubuntu/tkg-cluster.yml >> ~/.tanzu/tkg/config.yaml
   SSH_PUBLIC_KEY=`cat /home/ubuntu/.ssh/id_rsa.pub`
-  cat <<EOF >> /home/ubuntu/.tkg/config.yaml
+  cat <<EOF >> ~/.tanzu/tkg/config.yaml
 VSPHERE_SSH_AUTHORIZED_KEY: "$SSH_PUBLIC_KEY"
 EOF
   /bin/rm -f /home/ubuntu/tkg-cluster.yml

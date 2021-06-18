@@ -17,8 +17,9 @@ resource "local_file" "tkg_configuration_file" {
 # Generate additional configuration file.
 resource "local_file" "env_file" {
     content = templatefile("env.tpl", {
-      http_proxy_host = var.http_proxy_host,
-      http_proxy_port = var.http_proxy_port
+      http_proxy_host        = var.http_proxy_host,
+      http_proxy_port        = var.http_proxy_port,
+      control_plane_endpoint = var.control_plane_endpoint
     })
     filename        = "env"
     file_permission = "0644"
@@ -79,9 +80,9 @@ resource "vsphere_virtual_machine" "jumpbox" {
       private_key = file("~/.ssh/id_rsa")
   }
   provisioner "file" {
-    # Copy TKG binary CLI.
-    source      = var.tkg_cli_file_name
-    destination = "/home/ubuntu/tkg.tgz"
+    # Copy Tanzu CLI.
+    source      = var.tanzu_cli_file_name
+    destination = "/home/ubuntu/tanzu-cli.tar"
   }
   provisioner "file" {
     # Copy TKG configuration file.

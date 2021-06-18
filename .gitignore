@@ -8,3 +8,4 @@ tkg-cluster.yml
 vsphere-storageclass.yml
 *.ova
 env
+tanzu-cli-*

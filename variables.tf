@@ -45,14 +45,14 @@ variable "network" {
   default = "VM Network"
 }
 
-variable "tkg_cli_file_name" {
+variable "tanzu_cli_file_name" {
   type    = string
-  default = "tkg-linux-amd64-v1.0.0+vmware.1.gz"
+  default = "tanzu-cli-bundle-v1.3.1-linux-amd64.tar"
 }
 
 variable "ubuntu_template" {
   type    = string
-  default = "bionic-server-cloudimg-amd64"
+  default = "focal-server-cloudimg-amd64"
 }
 
 variable "http_proxy_host" {
@@ -63,4 +63,8 @@ variable "http_proxy_host" {
 variable "http_proxy_port" {
   type    = number
   default = 0
+}
+
+variable "control_plane_endpoint" {
+  type = string
 }

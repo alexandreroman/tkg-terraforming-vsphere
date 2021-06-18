@@ -9,11 +9,11 @@ to vSphere 6.7U3, leveraging these Terraform scripts.
 
 Download TKG bits to your workstation. The following components are required:
 
-- TKG CLI for Linux: includes the `tkg` CLI used to operate TKG and workload clusters from the jumpbox VM
-- Photon OS node OVA: used for TKG nodes
-- [Ubuntu Bionic server cloud image OVA](https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.ova): used for the jumpbox VM
+- Tanzu CLI for Linux: includes the `tanzu` CLI used to operate TKG and workload clusters from the jumpbox VM
+- OS node OVA: used for TKG nodes (based on Photon OS and Ubuntu)
+- [Ubuntu server cloud image OVA](https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.ova): used for the jumpbox VM
 
-Make sure to copy the TKG CLI archive (`tkg-linux-amd64-*.gz`) to this repository.
+Make sure to copy the Tanzu CLI archive (`tanzu-cli-bundle-*.tar`) to this repository.
 
 ### Prepare vSphere infrastructure
 
@@ -25,9 +25,7 @@ Create a resource pool under the cluster where TKG is deployed to: use name `TKG
 
 All TKG VMs will be deployed to this resource pool.
 
-You should have 2 OVA files on your workstation
-(Ubuntu Bionic server cloud image and Photon OS node):
-we're about to deploy each of these files to vSphere.
+You need to deploy all OVA files as OVF templates to vSphere.
 
 Repeat the next steps for each OVA file:
 
@@ -59,12 +57,17 @@ vsphere_server   = "vcsa.mycompany.com"
 network       = "changeme"
 datastore_url = "ds:///vmfs/volumes/changeme/"
 
-# TKG 1.2.1
-tkg_cli_file_name = "tkg-linux-amd64-v1.2.1+vmware.1.tar.gz"
+# TKG 1.3.1.
+tanzu_cli_file_name = "tanzu-cli-bundle-v1.3.1-linux-amd64.tar"
+
+# Management control plane endpoint.
+control_plane_endpoint = 192.168.100.1
 ```
 
-You must align this configuration file with the TKG version you deployed
-to your vSphere instance.
+As specified in the [TKG documentation](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-vsphere.html#static-vips-and-load-balancers-for-vsphere-2),
+you need to use a static IP for the control plane of the management cluster.
+Make sure that this IP address is in the same subnet as the DHCP range, but do not choose
+an IP address in the DHCP range.
 
 ## Bootstrap the jumpbox
 
@@ -78,7 +81,7 @@ Run this command to create a jumpbox VM using Terraform:
 $ terraform apply
 ```
 
-Using the jumpbox, you'll be able to interact with TKG using the `tkg` CLI.
+Using the jumpbox, you'll be able to interact with TKG using the `tanzu` CLI.
 You'll also use this jumpbox to connect to nodes using SSH.
 
 Deploying the jumpbox VM takes less than 5 minutes.
@@ -98,33 +101,46 @@ Connect to the jumpbox VM using SSH:
 $ ssh ubuntu@$(terraform output jumpbox_ip_address)
 ```
 
+A default configuration for the management cluster has been generated in
+the file `.tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml`.
+You may want to edit this file before creating the management cluster.
+
+You may also have to [adjust the correct BOM file](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-deploy-cli.html#set-the-tkgbomcustomimagetag-6)
+in case you're using a TKG patch release.
+
 Create the TKG management cluster:
 ```bash
-$ tkg init --infrastructure vsphere --vsphere-controlplane-endpoint-ip <static IP for control plane>
+$ tanzu management-cluster create --file $HOME/.tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
 ```
-
-As specified in the [TKG documentation](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.2/vmware-tanzu-kubernetes-grid-12/GUID-mgmt-clusters-vsphere-cli.html#tkg-init),
-you need to use a static IP for the control plane of the management cluster.
-Make sure that this IP address is in the same subnet as the DHCP range, but do not choose
-an IP address in the DHCP range.
 
 This process takes less than 10 minutes.
 
 ## Create TKG workload clusters
 
-From the jumpbox VM, create a workload cluster:
-```bash
-$ tkg create cluster dev01 --plan dev --vsphere-controlplane-endpoint-ip <static IP for control plane>
+You can now create workload clusters.
+
+Create a cluster configuration file in `.tanzu/tkg/clusterconfigs`.
+
+You may reuse the content from the management cluster configuration file,
+adjusting the control plane endpoint
+(do not pick the same IP address used for the management cluster!):
+
+```yaml
+CLUSTER_NAME: dev01
+CLUSTER_PLAN: dev
+VSPHERE_CONTROL_PLANE_ENDPOINT: 192.168.100.10
 ```
 
-Again, a static IP address must be set for the control plane of your cluster.
-Make sure that this IP address is not in the DHCP range, but is in the same subnet as the DHCP range
+Create the workload cluster:
+```bash
+$ tanzu cluster create --file $HOME/.tanzu/tkg/clusterconfigs/dev01-cluster-config.yaml
+```
 
 This process takes less than 5 minutes.
 
 Create a `kubeconfig` file to access your workload cluster:
 ```bash
-$ tkg get credentials dev01 --export-file dev01.kubeconfig
+$ tanzu cluster kubeconfig get dev01 --admin --export-file dev01.kubeconfig
 ```
 
 You can now use this file to access your workload cluster:
@@ -135,7 +151,7 @@ dev01-control-plane-r5nwl     Ready    master   10m     v1.17.3+vmware.2
 dev01-md-0-65bc768c89-xjn7h   Ready    <none>   9m44s   v1.17.3+vmware.2
 ```
 
-Just copy this file to your workstation to access the cluster
+Copy this file to your workstation to access the cluster
 without using the jumpbox VM.
 
 **Tips** - use this command to merge 2 or more `kubeconfig` files:
@@ -150,7 +166,7 @@ $ ssh capv@node_ip_address
 
 Use this command to add more nodes to your workload cluster (from the jumpbox VM):
 ```bash
-$ tkg scale cluster dev01 --worker-machine-count 3
+$ tanzu cluster scale dev01 --worker-machine-count 3
 ```
 
 ## Connect your workload cluster to a vSphere datastore
