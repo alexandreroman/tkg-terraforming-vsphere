@@ -1,6 +1,7 @@
 .DS_Store
 .terraform
 .terraform.lock*
+.terraform.tfstate.lock*
 terraform.tfstate*
 terraform.tfvars
 tkg-*.gz
