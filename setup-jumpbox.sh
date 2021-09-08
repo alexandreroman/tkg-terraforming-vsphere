@@ -14,17 +14,16 @@ if [ -f /home/ubuntu/tanzu-cli.tar ]; then
     gunzip vendir-linux-amd64*.gz && sudo install vendir-linux-amd64* /usr/local/bin/vendir && \
     tanzu plugin clean && \
     tanzu plugin install --local /home/ubuntu/tanzu/cli all && \
-    mkdir -p /home/ubuntu/.tanzu && \
-    tanzu completion bash > /home/ubuntu/.tanzu/completion.bash.inc && \
-    printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.tanzu/completion.bash.inc'\n" >> ~/.bashrc
+    mkdir -p /home/ubuntu/.config/tanzu && \
+    tanzu completion bash > /home/ubuntu/.config/tanzu/completion.bash.inc && \
+    printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.config/tanzu/completion.bash.inc'\n" >> ~/.bashrc
 fi
 
 # Generate a default TKG configuration.
-if ! [ -f /home/ubuntu/.tanzu/tkg/cluster-config.yaml ]; then
-  tanzu init > /dev/null 2>&1
-  tanzu management-cluster create > /dev/null 2>&1
-  mkdir -p ~/.tanzu/tkg/clusterconfigs
-  cat <<EOF >> ~/.tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
+if ! [ -f /home/ubuntu/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml ]; then
+  tanzu config init > /dev/null 2>&1
+  mkdir -p ~/.config/tanzu/tkg/clusterconfigs
+  cat <<EOF >> ~/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
 CLUSTER_NAME: mgmt
 CLUSTER_PLAN: dev
 VSPHERE_CONTROL_PLANE_ENDPOINT: "$CONTROL_PLANE_ENDPOINT"
@@ -64,7 +63,7 @@ fi
 
 # Install K8s CLI.
 if ! [ -f /usr/local/bin/kubectl ]; then
-  K8S_VERSION=v1.20.5
+  K8S_VERSION=v1.21.2
   curl -LO https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     sudo install ./kubectl /usr/local/bin/kubectl
@@ -73,9 +72,9 @@ fi
 
 # Configure TKG.
 if [ -f /home/ubuntu/tkg-cluster.yml ]; then
-  cat /home/ubuntu/tkg-cluster.yml >> ~/.tanzu/tkg/config.yaml
+  cat /home/ubuntu/tkg-cluster.yml >> ~/.config/tanzu/tkg/config.yaml
   SSH_PUBLIC_KEY=`cat /home/ubuntu/.ssh/id_rsa.pub`
-  cat <<EOF >> ~/.tanzu/tkg/config.yaml
+  cat <<EOF >> ~/.config/tanzu/tkg/config.yaml
 VSPHERE_SSH_AUTHORIZED_KEY: "$SSH_PUBLIC_KEY"
 EOF
   /bin/rm -f /home/ubuntu/tkg-cluster.yml

@@ -47,7 +47,7 @@ variable "network" {
 
 variable "tanzu_cli_file_name" {
   type    = string
-  default = "tanzu-cli-bundle-v1.3.1-linux-amd64.tar"
+  default = "tanzu-cli-bundle-linux-amd64.tar"
 }
 
 variable "ubuntu_template" {

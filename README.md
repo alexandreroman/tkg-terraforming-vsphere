@@ -102,7 +102,7 @@ $ ssh ubuntu@$(terraform output jumpbox_ip_address)
 ```
 
 A default configuration for the management cluster has been generated in
-the file `.tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml`.
+the file `.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml`.
 You may want to edit this file before creating the management cluster.
 
 You may also have to [adjust the correct BOM file](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-deploy-cli.html#set-the-tkgbomcustomimagetag-6)
@@ -110,7 +110,7 @@ in case you're using a TKG patch release.
 
 Create the TKG management cluster:
 ```bash
-$ tanzu management-cluster create --file $HOME/.tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
+$ tanzu management-cluster create --file $HOME/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
 ```
 
 This process takes less than 10 minutes.
@@ -119,7 +119,7 @@ This process takes less than 10 minutes.
 
 You can now create workload clusters.
 
-Create a cluster configuration file in `.tanzu/tkg/clusterconfigs`.
+Create a cluster configuration file in `.config/tanzu/tkg/clusterconfigs`.
 
 You may reuse the content from the management cluster configuration file,
 adjusting the control plane endpoint
@@ -133,7 +133,7 @@ VSPHERE_CONTROL_PLANE_ENDPOINT: 192.168.100.10
 
 Create the workload cluster:
 ```bash
-$ tanzu cluster create --file $HOME/.tanzu/tkg/clusterconfigs/dev01-cluster-config.yaml
+$ tanzu cluster create --file $HOME/.config/tanzu/tkg/clusterconfigs/dev01-cluster-config.yaml
 ```
 
 This process takes less than 5 minutes.
