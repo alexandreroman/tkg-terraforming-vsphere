@@ -70,6 +70,13 @@ if ! [ -f /usr/local/bin/kubectl ]; then
     echo 'source <(kubectl completion bash)' >> ~/.bashrc
 fi
 
+# Install govc.
+if ! [ -f /usr/local/bin/govc ]; then
+  curl -L https://github.com/vmware/govmomi/releases/download/v0.20.0/govc_linux_amd64.gz | gunzip -c > /tmp/govc && \
+    sudo install /tmp/govc /usr/local/bin/govc
+  cat ~/.govc.env >> ~/.bashrc
+fi
+
 # Configure TKG.
 if [ -f /home/ubuntu/tkg-cluster.yml ]; then
   cat /home/ubuntu/tkg-cluster.yml >> ~/.config/tanzu/tkg/config.yaml

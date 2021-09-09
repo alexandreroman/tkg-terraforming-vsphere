@@ -25,6 +25,17 @@ resource "local_file" "env_file" {
     file_permission = "0644"
 }
 
+# Generate govc configuration file.
+resource "local_file" "govc_file" {
+    content = templatefile("govc.tpl", {
+      vsphere_server   = var.vsphere_server,
+      vsphere_user     = var.vsphere_user,
+      vsphere_password = var.vsphere_password
+    })
+    filename        = "govc.env"
+    file_permission = "0644"
+}
+
 # Use the jumpbox to access TKG from the outside.
 resource "vsphere_virtual_machine" "jumpbox" {
   name             = "jumpbox"
@@ -93,6 +104,11 @@ resource "vsphere_virtual_machine" "jumpbox" {
     # Copy additional configuration file.
     source      = "env"
     destination = "/home/ubuntu/.env"
+  }
+  provisioner "file" {
+    # Copy govc configuration file.
+    source      = "govc.env"
+    destination = "/home/ubuntu/.govc.env"
   }
   provisioner "file" {
     # Copy install scripts.

@@ -10,3 +10,4 @@ vsphere-storageclass.yml
 *.ova
 env
 tanzu-cli-*
+govc.env
