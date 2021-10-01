@@ -3,9 +3,6 @@ vsphere_server   = "vcsa.mydomain.com"
 network          = "net"
 datastore_url    = "ds:///vmfs/volumes/changeme/"
 
-# TKG 1.4.
-tanzu_cli_file_name = "tanzu-cli-bundle-linux-amd64.tar"
-
 # Management control plane endpoint.
 control_plane_endpoint = 192.168.100.1
 

@@ -1,7 +1,7 @@
 # Terraforming vSphere for Tanzu Kubernetes Grid (TKG)
 
 Use this repository to deploy [TKG](https://tanzu.vmware.com/kubernetes-grid)
-to vSphere 6.7U3, leveraging these Terraform scripts.
+to vSphere 6.7u3, leveraging these Terraform scripts.
 
 ## Prerequisites
 
@@ -52,19 +52,15 @@ Starting from `terraform.tfvars.tpl`, create new file `terraform.tfvars`:
 
 ```yaml
 vsphere_password = "changeme"
-vsphere_server   = "vcsa.mycompany.com"
-
-network       = "changeme"
-datastore_url = "ds:///vmfs/volumes/changeme/"
-
-# TKG 1.3.1.
-tanzu_cli_file_name = "tanzu-cli-bundle-v1.3.1-linux-amd64.tar"
+vsphere_server   = "vcsa.mydomain.com"
+network          = "net"
+datastore_url    = "ds:///vmfs/volumes/changeme/"
 
 # Management control plane endpoint.
 control_plane_endpoint = 192.168.100.1
 ```
 
-As specified in the [TKG documentation](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-vsphere.html#static-vips-and-load-balancers-for-vsphere-2),
+As specified in the [TKG documentation](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.4/vmware-tanzu-kubernetes-grid-14/GUID-mgmt-clusters-vsphere.html#kubevip-and-nsx-advanced-load-balancer-for-vsphere-2),
 you need to use a static IP for the control plane of the management cluster.
 Make sure that this IP address is in the same subnet as the DHCP range, but do not choose
 an IP address in the DHCP range.
@@ -104,9 +100,6 @@ $ ssh ubuntu@$(terraform output jumpbox_ip_address)
 A default configuration for the management cluster has been generated in
 the file `.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml`.
 You may want to edit this file before creating the management cluster.
-
-You may also have to [adjust the correct BOM file](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-deploy-cli.html#set-the-tkgbomcustomimagetag-6)
-in case you're using a TKG patch release.
 
 Create the TKG management cluster:
 ```bash
