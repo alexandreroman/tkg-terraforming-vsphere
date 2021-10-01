@@ -2,34 +2,6 @@
 
 . /home/ubuntu/.env
 
-# Uncompress TKG archive and install CLI.
-if [ -f /home/ubuntu/tanzu-cli.tar ]; then
-  mkdir /home/ubuntu/tanzu && mv /home/ubuntu/tanzu-cli.tar /home/ubuntu/tanzu && \
-    cd /home/ubuntu/tanzu && tar vxf tanzu-cli.tar && cd /home/ubuntu/tanzu/cli && \
-    sudo install core/v*/tanzu-core-linux_amd64 /usr/local/bin/tanzu && \
-    gunzip ytt-linux-amd64-*.gz && sudo install ytt-linux-amd64* /usr/local/bin/ytt && \
-    gunzip kapp-linux-amd64*.gz && sudo install kapp-linux-amd64* /usr/local/bin/kapp && \
-    gunzip imgpkg-linux-amd64*.gz && sudo install imgpkg-linux-amd64* /usr/local/bin/imgpkg && \
-    gunzip kbld-linux-amd64*.gz && sudo install kbld-linux-amd64* /usr/local/bin/kbld && \
-    gunzip vendir-linux-amd64*.gz && sudo install vendir-linux-amd64* /usr/local/bin/vendir && \
-    tanzu plugin clean && \
-    tanzu plugin install --local /home/ubuntu/tanzu/cli all && \
-    mkdir -p /home/ubuntu/.config/tanzu && \
-    tanzu completion bash > /home/ubuntu/.config/tanzu/completion.bash.inc && \
-    printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.config/tanzu/completion.bash.inc'\n" >> ~/.bashrc
-fi
-
-# Generate a default TKG configuration.
-if ! [ -f /home/ubuntu/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml ]; then
-  tanzu config init > /dev/null 2>&1
-  mkdir -p ~/.config/tanzu/tkg/clusterconfigs
-  cat <<EOF >> ~/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
-CLUSTER_NAME: mgmt
-CLUSTER_PLAN: dev
-VSPHERE_CONTROL_PLANE_ENDPOINT: "$CONTROL_PLANE_ENDPOINT"
-EOF
-fi
-
 # Set up HTTP proxy support
 if ! [ -z "$HTTP_PROXY_HOST" ]; then
   export http_proxy=http://${HTTP_PROXY_HOST}:${HTTP_PROXY_PORT}
@@ -54,6 +26,44 @@ Environment="NO_PROXY="localhost,127.0.0.1,::1,.local"
 EOF
   sudo mkdir -p /etc/systemd/system/docker.service.d
   sudo mv /home/ubuntu/docker-proxy /etc/systemd/system/docker.service.d/proxy.conf
+fi
+
+# Uncompress TKG archive and install CLI.
+if [ -f /home/ubuntu/tanzu-cli.tar ]; then
+  mkdir /home/ubuntu/tanzu && mv /home/ubuntu/tanzu-cli.tar /home/ubuntu/tanzu && \
+    cd /home/ubuntu/tanzu && tar vxf tanzu-cli.tar && cd /home/ubuntu/tanzu/cli && \
+    sudo install core/v*/tanzu-core-linux_amd64 /usr/local/bin/tanzu && \
+    gunzip ytt-linux-amd64-*.gz && sudo install ytt-linux-amd64* /usr/local/bin/ytt && \
+    gunzip kapp-linux-amd64*.gz && sudo install kapp-linux-amd64* /usr/local/bin/kapp && \
+    gunzip imgpkg-linux-amd64*.gz && sudo install imgpkg-linux-amd64* /usr/local/bin/imgpkg && \
+    gunzip kbld-linux-amd64*.gz && sudo install kbld-linux-amd64* /usr/local/bin/kbld && \
+    gunzip vendir-linux-amd64*.gz && sudo install vendir-linux-amd64* /usr/local/bin/vendir && \
+    tanzu plugin clean && \
+    tanzu plugin install --local /home/ubuntu/tanzu/cli all && \
+    mkdir -p /home/ubuntu/.config/tanzu && \
+    tanzu completion bash > /home/ubuntu/.config/tanzu/completion.bash.inc && \
+    printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.config/tanzu/completion.bash.inc'\n" >> ~/.bashrc
+fi
+
+# Uncompress TCE archive and install CLI.
+if [ -f /home/ubuntu/tce.tar.gz ]; then
+  mkdir /home/ubuntu/tanzu && mv /home/ubuntu/tce.tar.gz /home/ubuntu/tanzu && \
+    cd /home/ubuntu/tanzu && tar --strip-components=1 -zxvf tce.tar.gz && \
+    ./install.sh && \
+    mkdir -p /home/ubuntu/.config/tanzu && \
+    tanzu completion bash > /home/ubuntu/.config/tanzu/completion.bash.inc && \
+    printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.config/tanzu/completion.bash.inc'\n" >> ~/.bashrc
+fi
+
+# Generate a default TKG configuration.
+if ! [ -f /home/ubuntu/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml ]; then
+  tanzu config init > /dev/null 2>&1
+  mkdir -p ~/.config/tanzu/tkg/clusterconfigs
+  cat <<EOF >> ~/.config/tanzu/tkg/clusterconfigs/mgmt-cluster-config.yaml
+CLUSTER_NAME: mgmt
+CLUSTER_PLAN: dev
+VSPHERE_CONTROL_PLANE_ENDPOINT: "$CONTROL_PLANE_ENDPOINT"
+EOF
 fi
 
 # Generate a SSH keypair.

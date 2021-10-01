@@ -11,3 +11,4 @@ vsphere-storageclass.yml
 env
 tanzu-cli-*
 govc.env
+tce-*.tar.gz

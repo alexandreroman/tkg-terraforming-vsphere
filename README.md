@@ -3,6 +3,10 @@
 Use this repository to deploy [TKG](https://tanzu.vmware.com/kubernetes-grid)
 to vSphere 6.7u3, leveraging these Terraform scripts.
 
+This repository is also compatible with
+[Tanzu Community Edition](https://tanzucommunityedition.io) (TCE),
+the open source version of TKG.
+
 ## Prerequisites
 
 ### Download components
@@ -64,6 +68,16 @@ As specified in the [TKG documentation](https://docs.vmware.com/en/VMware-Tanzu-
 you need to use a static IP for the control plane of the management cluster.
 Make sure that this IP address is in the same subnet as the DHCP range, but do not choose
 an IP address in the DHCP range.
+
+Please note that you can also use these Terraform scripts to deploy
+[Tanzu Community Edition](https://tanzucommunityedition.io) (TCE),
+the open source version of TKG.
+All you need to do is to copy the TCE bundle archive in this directory
+(`tce-linux-amd64-X.tar.gz`), and set this property in your `terraform.tfvars` file:
+
+```yaml
+tanzu_cli_file_name = "tce-linux-amd64-v0.9.1.tar.gz"
+```
 
 ## Bootstrap the jumpbox
 
