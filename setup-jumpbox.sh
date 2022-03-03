@@ -138,3 +138,11 @@ if ! [ -f /usr/local/bin/k9s ]; then
   cd /home/ubuntu && \
   rm -rf /home/ubuntu/k9s
 fi
+
+# Install kubectx.
+if ! [ -f /usr/local/bin/kubectx ]; then
+  curl -L https://github.com/ahmetb/kubectx/releases/download/v0.9.4/kubectx_v0.9.4_linux_x86_64.tar.gz -o /home/ubuntu/kubectx.tar.gz && \
+  tar zxf /home/ubuntu/kubectx.tar.gz && \
+  sudo install /home/ubuntu/kubectx /usr/local/bin/kubectx && \
+  rm /home/ubuntu/kubectx /home/ubuntu/kubectx.tar.gz
+fi
