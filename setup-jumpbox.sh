@@ -115,10 +115,16 @@ sudo snap install yq
 # Configure VIm.
 if ! [ -f /home/ubuntu/.vimrc ]; then
   cat <<EOF >> /home/ubuntu/.vimrc
-set ts=2
-set sw=2
+filetype plugin indent on
+syntax on
+set term=xterm-256color
+
 set ai
 set et
+set ts=2
+set sw=2
+set ruler
+set cursorcolumn
 EOF
 fi
 
