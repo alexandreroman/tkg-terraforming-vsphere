@@ -126,3 +126,14 @@ sudo apt-get update && \
 sudo apt-get -y install docker.io && \
 sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker && \
 sudo usermod -aG docker ubuntu
+
+# Install K9s.
+if ! [ -f /usr/local/bin/k9s ]; then
+  mkdir /home/ubuntu/k9s && \
+  cd /home/ubuntu/k9s && \
+  curl -L https://github.com/derailed/k9s/releases/download/v0.25.18/k9s_Linux_x86_64.tar.gz -o k9s.tar.gz && \
+  tar zxf k9s.tar.gz && \
+  sudo install ./k9s /usr/local/bin/k9s && \
+  cd /home/ubuntu && \
+  rm -rf /home/ubuntu/k9s
+fi
