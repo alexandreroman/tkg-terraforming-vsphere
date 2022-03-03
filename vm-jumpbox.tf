@@ -93,7 +93,7 @@ resource "vsphere_virtual_machine" "jumpbox" {
   provisioner "file" {
     # Copy Tanzu CLI.
     source      = var.tanzu_cli_file_name
-    destination = length(regexall("tce.*", var.tanzu_cli_file_name)) > 0 ? "/home/ubuntu/tce.tar.gz" : "/home/ubuntu/tanzu-cli.tar"
+    destination = length(regexall("tce.*", var.tanzu_cli_file_name)) > 0 ? "/home/ubuntu/tce.tar.gz" : (length(regexall(".*.tar.gz", var.tanzu_cli_file_name)) > 0 ? "/home/ubuntu/tanzu-cli.tar.gz" : "/home/ubuntu/tanzu-cli.tar")
   }
   provisioner "file" {
     # Copy TKG configuration file.

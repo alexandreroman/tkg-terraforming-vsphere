@@ -28,6 +28,10 @@ EOF
   sudo mv /home/ubuntu/docker-proxy /etc/systemd/system/docker.service.d/proxy.conf
 fi
 
+if [ -f /home/ubuntu/tanzu-cli.tar.gz ]; then
+  cd /home/ubuntu && gunzip /home/ubuntu/tanzu-cli.tar.gz
+fi
+
 # Uncompress TKG archive and install CLI.
 if [ -f /home/ubuntu/tanzu-cli.tar ]; then
   mkdir /home/ubuntu/tanzu && mv /home/ubuntu/tanzu-cli.tar /home/ubuntu/tanzu && \
@@ -38,9 +42,16 @@ if [ -f /home/ubuntu/tanzu-cli.tar ]; then
     gunzip imgpkg-linux-amd64*.gz && sudo install imgpkg-linux-amd64* /usr/local/bin/imgpkg && \
     gunzip kbld-linux-amd64*.gz && sudo install kbld-linux-amd64* /usr/local/bin/kbld && \
     gunzip vendir-linux-amd64*.gz && sudo install vendir-linux-amd64* /usr/local/bin/vendir && \
-    tanzu plugin clean && \
-    tanzu plugin install --local /home/ubuntu/tanzu/cli all && \
-    mkdir -p /home/ubuntu/.config/tanzu && \
+    tanzu init && \
+    tanzu plugin clean
+
+    # For TKG 1.4 and earlier:
+    tanzu plugin install --local /home/ubuntu/tanzu/cli all
+
+    # For TKG 1.5+:
+    cd /home/ubuntu/tanzu && tanzu plugin sync
+
+    cd /home/ubuntu && mkdir -p /home/ubuntu/.config/tanzu && \
     tanzu completion bash > /home/ubuntu/.config/tanzu/completion.bash.inc && \
     printf "\n# Tanzu shell completion\nsource '/home/ubuntu/.config/tanzu/completion.bash.inc'\n" >> ~/.bashrc
 fi
@@ -73,7 +84,7 @@ fi
 
 # Install K8s CLI.
 if ! [ -f /usr/local/bin/kubectl ]; then
-  K8S_VERSION=v1.21.2
+  K8S_VERSION=v1.22.5
   curl -LO https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     sudo install ./kubectl /usr/local/bin/kubectl
