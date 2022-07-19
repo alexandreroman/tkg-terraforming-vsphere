@@ -84,7 +84,7 @@ fi
 
 # Install K8s CLI.
 if ! [ -f /usr/local/bin/kubectl ]; then
-  K8S_VERSION=v1.22.5
+  K8S_VERSION=v1.22.9
   curl -LO https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
     sudo install ./kubectl /usr/local/bin/kubectl && \
