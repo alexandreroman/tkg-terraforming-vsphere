@@ -143,6 +143,7 @@ if ! [ -f /usr/local/bin/k9s ]; then
   sudo install ./k9s /usr/local/bin/k9s && \
   cd /home/ubuntu && \
   rm -rf /home/ubuntu/k9s
+  echo 'export COLORTERM=truecolor' >> ~/.bashrc
 fi
 
 # Install kubectx.
